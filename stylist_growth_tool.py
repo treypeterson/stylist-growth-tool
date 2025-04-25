@@ -92,6 +92,10 @@ if submitted:
         st.markdown(f"**{i}.** {suggestion}")
 
     st.success("✅ Your personalized growth plan is ready! Follow these steps to grow your business faster.")
+<<<<<<< HEAD
 
 
+=======
+    
+>>>>>>> af6d79fdc795b597137f9b5676be56b8547f29ca
 
