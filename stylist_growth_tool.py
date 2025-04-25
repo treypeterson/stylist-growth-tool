@@ -80,7 +80,7 @@ if submitted:
     if retail_sales_percent < 15:
         suggestions.append("Use 'show and tell' to recommend retail products during styling.")
     if no_show_rate > 5:
-        suggestions.append("Require deposits for services over $100 and send reminder texts 48 and 24 hours before.")
+        suggestions.append("Require deposits for services over $100 and send reminder texts 48 and 24 hours before appointments.")
     if satisfaction_rating < 4.5:
         suggestions.append("Personally ask happy clients for Google reviews and display a QR code at checkout.")
     if new_clients_per_month < 10:
@@ -90,3 +90,7 @@ if submitted:
     st.header("Your Custom Growth Plan")
     for i, suggestion in enumerate(suggestions, 1):
         st.markdown(f"**{i}.** {suggestion}")
+
+    st.success("✅ Your personalized growth plan is ready! Follow these steps to grow your business faster.")
+    
+
