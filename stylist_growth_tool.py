@@ -2,35 +2,47 @@ import streamlit as st
 
 # Title and intro
 st.title("Stylist Growth Strategy Generator")
-st.write("Answer a few quick questions about your business, and get tailored growth advice.")
+st.write("Answer a few quick questions about your business, and get a hyper-specific growth action plan.")
 
 # Input form
 with st.form("stylist_form"):
-    st.header("Business Info")
-    womens_cut_price = st.number_input("Average price for a women's haircut ($)", min_value=0.0, format="%.2f")
-    mens_cut_price = st.number_input("Average price for a men's haircut ($)", min_value=0.0, format="%.2f")
-    color_service_price = st.number_input("Average price for a single-process color service ($)", min_value=0.0, format="%.2f")
-    specialty_services = st.text_area("List any specialty services you offer (e.g., balayage, keratin, extensions)")
+    st.header("Service Offerings & Pricing")
+    balayage_offered = st.radio("Do you offer Balayage?", ["Yes", "No"])
+    balayage_price = st.number_input("If yes, current Balayage price ($)", min_value=0.0, format="%.2f")
 
-    st.header("Client Flow")
-    first_time_retention = st.slider("First-time client retention rate (%)", min_value=0, max_value=100)
-    existing_client_retention = st.slider("Existing client retention rate (%)", min_value=0, max_value=100)
-    rebooking_rate = st.slider("Rebooking rate at checkout (%)", min_value=0, max_value=100)
-    referrals_per_week = st.number_input("Number of client referrals per week", min_value=0)
+    partial_foil_offered = st.radio("Do you offer Partial Foil Highlights?", ["Yes", "No"])
+    partial_foil_price = st.number_input("If yes, current Partial Foil price ($)", min_value=0.0, format="%.2f")
 
-    st.header("Marketing & Online Presence")
-    posts_per_week = st.number_input("Instagram posts per week", min_value=0, max_value=14)
-    content_types = st.text_area("Types of content you post (e.g., transformations, tips, promotions)")
-    engagement_rate = st.slider("Social media engagement rate (%)", min_value=0, max_value=100)
-    online_booking = st.radio("Do you offer online booking?", ["Yes", "No"])
-    booking_link = st.radio("Is your booking link in your Instagram bio?", ["Yes", "No"])
+    full_foil_offered = st.radio("Do you offer Full Foil Highlights?", ["Yes", "No"])
+    full_foil_price = st.number_input("If yes, current Full Foil price ($)", min_value=0.0, format="%.2f")
 
-    st.header("Business Metrics")
-    avg_client_spend = st.number_input("Average revenue per client visit ($)", min_value=0.0, format="%.2f")
-    retail_sales_percent = st.slider("Retail product sales (% of revenue)", min_value=0, max_value=100)
-    no_show_rate = st.slider("Appointment no-show rate (%)", min_value=0, max_value=100)
-    satisfaction_rating = st.slider("Average client satisfaction rating (1-5 stars)", min_value=1.0, max_value=5.0, step=0.1)
+    color_correction_offered = st.radio("Do you offer Color Correction?", ["Yes", "No"])
+    extensions_offered = st.radio("Do you offer Hair Extensions?", ["Yes", "No"])
+
+    st.header("Haircut Pricing")
+    womens_cut_price = st.number_input("Current price for Women's Haircut ($)", min_value=0.0, format="%.2f")
+    mens_cut_price = st.number_input("Current price for Men's Haircut ($)", min_value=0.0, format="%.2f")
+
+    st.header("Client Retention")
+    first_time_retention = st.slider("First-time client retention rate (%)", 0, 100)
+    rebooking_rate = st.slider("Rebooking at checkout rate (%)", 0, 100)
+
+    st.header("New Client Acquisition")
     new_clients_per_month = st.number_input("New clients gained per month", min_value=0)
+    referral_program = st.radio("Do you have a referral program?", ["Yes", "No"])
+
+    st.header("Instagram Marketing")
+    posts_per_week = st.number_input("Instagram posts per week", min_value=0, max_value=14)
+    engagement_rate = st.slider("Instagram engagement rate (%)", 0, 100)
+
+    st.header("Retail Product Sales")
+    retail_sales_percent = st.slider("Retail product sales (% of total revenue)", 0, 100)
+
+    st.header("No-Show Management")
+    no_show_rate = st.slider("No-show rate (%)", 0, 100)
+
+    st.header("Client Reviews")
+    review_rating = st.slider("Average client review rating (stars)", 1.0, 5.0, step=0.1)
 
     submitted = st.form_submit_button("Generate My Growth Plan")
 
@@ -38,64 +50,71 @@ with st.form("stylist_form"):
 if submitted:
     suggestions = []
 
-    # Pricing Checks
-    if womens_cut_price < 45:
-        suggestions.append("Raise your women's haircut price slightly and offer service upgrades like deep conditioning.")
-    if mens_cut_price < 25:
-        suggestions.append("Enhance men's services (e.g., scalp massage) to justify raising prices.")
-    if color_service_price < 108:
-        suggestions.append("Highlight premium products and skills to increase color service pricing.")
+    # Services
+    if balayage_offered == "No":
+        suggestions.append("Add Balayage service at $125 for first 10 clients, then raise to $160. Launch within 30 days.")
+    elif balayage_price < 150:
+        suggestions.append("Raise Balayage price by $15 immediately. Promote as 'Signature Balayage with Gloss + Bond Builder.'")
 
-    # Specialty Services
-    if len(specialty_services.split(",")) < 3:
-        suggestions.append("Add at least 1 new specialty service (e.g., balayage, extensions) to expand your menu.")
+    if partial_foil_offered == "No":
+        suggestions.append("Add Partial Foil service at $90 for first 5–8 clients, then raise to $110. Launch within 30 days.")
+    elif partial_foil_price < 100:
+        suggestions.append("Raise Partial Foil price by $15. Rebrand as 'Custom Dimensional Foiling.'")
 
-    # Client Flow Metrics
+    if full_foil_offered == "No":
+        suggestions.append("Add Full Foil service at $130 intro price for first 5 clients, then $150.")
+    elif full_foil_price < 140:
+        suggestions.append("Raise Full Foil price by $15–$20. Market as 'Full Color Mapping.'")
+
+    if color_correction_offered == "No":
+        suggestions.append("List Color Correction service now. Offer free consultations for first 5 cases. Start at $85/hr.")
+
+    if extensions_offered == "No":
+        suggestions.append("Start certification in extensions within 60 days. Offer model installs with 20% discount.")
+
+    # Haircut Pricing
+    if womens_cut_price < 50:
+        suggestions.append("Raise Women's Haircut price by $5 immediately. Add treatment upgrades for +$20 upsells.")
+
+    if mens_cut_price < 30:
+        suggestions.append("Raise Men's Haircut price by $5. Launch monthly 'Maintenance Club' membership option.")
+
+    # Client Retention
     if first_time_retention < 50:
-        suggestions.append("Offer discounts for rebooking and send thank-you texts to first-time clients.")
-    if existing_client_retention < 80:
-        suggestions.append("Create a VIP loyalty program to boost client retention.")
+        suggestions.append("Launch Rebooking Reward (free deep conditioner if rebooked same day). Track offers on tally sheet.")
+
     if rebooking_rate < 70:
-        suggestions.append("Rebook clients at checkout with small incentives like a free deep conditioner.")
-    if referrals_per_week < 2:
-        suggestions.append("Launch a visible referral program (e.g., Refer 2 friends, get a free blowout).")
+        suggestions.append("Use rebooking script at checkout 100% of the time. Offer 10% off next service if booked today.")
 
-    # Marketing Metrics
-    if posts_per_week < 5:
-        suggestions.append("Increase to at least 5 Instagram posts per week. Batch content creation every Sunday.")
-    if len(content_types.split(",")) < 3:
-        suggestions.append("Diversify your posts to include tips, client transformations, and behind-the-scenes content.")
-    if engagement_rate < 5:
-        suggestions.append("End every post with a question and reply to all comments within 24 hours.")
-
-    # Booking Improvements
-    if online_booking == "No":
-        suggestions.append("Set up online booking using GlossGenius, Square, or Vagaro.")
-    if booking_link == "No":
-        suggestions.append("Add your booking link to your Instagram bio with a clear call to action.")
-
-    # Business Metrics
-    if avg_client_spend < 50:
-        suggestions.append("Offer add-on services and suggest home care products at checkout.")
-    if retail_sales_percent < 15:
-        suggestions.append("Use 'show and tell' to recommend retail products during styling.")
-    if no_show_rate > 5:
-        suggestions.append("Require deposits for services over $100 and send reminder texts 48 and 24 hours before appointments.")
-    if satisfaction_rating < 4.5:
-        suggestions.append("Personally ask happy clients for Google reviews and display a QR code at checkout.")
+    # New Client Acquisition
     if new_clients_per_month < 10:
-        suggestions.append("Run new client promos monthly and partner with local businesses for referrals.")
+        suggestions.append("Launch New Client 15% Off Promo. Run boosted IG ad at $5/day for 2 weeks.")
+
+    if referral_program == "No":
+        suggestions.append("Launch 'Refer a Friend, Get $10 Off' program via text and social post.")
+
+    # Instagram Marketing
+    if posts_per_week < 5:
+        suggestions.append("Post minimum 5x/week: 2 transformations, 1 tip, 1 behind-the-scenes, 1 promotion.")
+
+    if engagement_rate < 5:
+        suggestions.append("End posts with questions. Reply to comments within 2 hours to boost engagement.")
+
+    # Retail Product Sales
+    if retail_sales_percent < 15:
+        suggestions.append("Recommend 1 product at every checkout. Launch 'Buy 2, Get 10% Off' bundle.")
+
+    # No-Show Management
+    if no_show_rate > 5:
+        suggestions.append("Require 30–50% deposits for services over $100. Send 48 and 24-hour reminders.")
+
+    # Client Reviews
+    if review_rating < 4.5:
+        suggestions.append("Create QR code linking to review page at checkout. Offer $5 off for leaving a review.")
 
     # Display output
     st.header("Your Custom Growth Plan")
     for i, suggestion in enumerate(suggestions, 1):
         st.markdown(f"**{i}.** {suggestion}")
 
-    st.success("✅ Your personalized growth plan is ready! Follow these steps to grow your business faster.")
-<<<<<<< HEAD
-
-
-=======
-    
->>>>>>> af6d79fdc795b597137f9b5676be56b8547f29ca
-
+    st.success("✅ Your personalized growth plan is ready! Follow these detailed steps to increase business.")
