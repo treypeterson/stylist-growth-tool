@@ -1,132 +1,114 @@
 import streamlit as st
 
-# Title and intro
+# ----------------- PAGE SETUP -----------------
+st.set_page_config(page_title="Stylist Growth Strategy Generator", page_icon="✂️", layout="centered")
+
+# ----------------- HEADER -----------------
 st.title("Stylist Growth Strategy Generator")
-st.write("Answer a few quick questions about your business, and get a hyper-specific, STL-metro-specific growth plan.")
+st.write("Answer a few quick questions to get a hyper-specific growth plan tailored to you and your business. Enter your email to receive a copy!")
 
-# Input form
-with st.form("stylist_form"):
-    st.header("Service Offerings & Pricing")
-    balayage_offered = st.radio("Do you offer Balayage?", ["Yes", "No"])
-    if balayage_offered == "Yes":
-        balayage_price = st.number_input("Current Balayage price ($)", min_value=0.0, format="%.2f")
+# ----------------- BASIC INFO -----------------
+st.header("Your Info")
+name = st.text_input("Your Name")
+email = st.text_input("Email Address")
+username = st.text_input("Create a Username")
 
-    partial_foil_offered = st.radio("Do you offer Partial Foil Highlights?", ["Yes", "No"])
-    if partial_foil_offered == "Yes":
-        partial_foil_price = st.number_input("Current Partial Foil price ($)", min_value=0.0, format="%.2f")
+business_type = st.selectbox("Which best describes your business model?", [
+    "Booth Renter", "Commission Stylist", "Salon Owner", "Suite Renter", "Employee Stylist", "Other"
+])
 
-    full_foil_offered = st.radio("Do you offer Full Foil Highlights?", ["Yes", "No"])
-    if full_foil_offered == "Yes":
-        full_foil_price = st.number_input("Current Full Foil price ($)", min_value=0.0, format="%.2f")
+years_experience = st.slider("How many years have you been doing hair?", 0, 50, 1)
 
-    color_correction_offered = st.radio("Do you offer Color Correction?", ["Yes", "No"])
-    extensions_offered = st.radio("Do you offer Hair Extensions?", ["Yes", "No"])
+# ----------------- SERVICE OFFERINGS -----------------
+st.header("Service Offerings & Pricing")
 
-    st.header("Haircut Pricing")
-    womens_cut_price = st.number_input("Women's Haircut price ($)", min_value=0.0, format="%.2f")
-    mens_cut_price = st.number_input("Men's Haircut price ($)", min_value=0.0, format="%.2f")
+balayage = st.radio("Do you offer Balayage?", ("Yes", "No"))
+if balayage == "Yes":
+    balayage_price = st.number_input("Current Balayage Price ($)", min_value=0.0, format="%.2f")
 
-    st.header("Social Media Presence")
-    instagram_posts = st.number_input("Instagram posts per week", min_value=0)
-    instagram_engagement = st.slider("Instagram engagement rate (%)", 0, 100)
+partial_foil = st.radio("Do you offer Partial Foil Highlights?", ("Yes", "No"))
+if partial_foil == "Yes":
+    partial_foil_price = st.number_input("Current Partial Foil Price ($)", min_value=0.0, format="%.2f")
 
-    facebook_posts = st.number_input("Facebook posts per week", min_value=0)
-    facebook_engagement = st.slider("Facebook engagement rate (%)", 0, 100)
+full_foil = st.radio("Do you offer Full Foil Highlights?", ("Yes", "No"))
+if full_foil == "Yes":
+    full_foil_price = st.number_input("Current Full Foil Price ($)", min_value=0.0, format="%.2f")
 
-    tiktok_posts = st.number_input("TikTok posts per week", min_value=0)
-    tiktok_engagement = st.slider("TikTok engagement rate (%)", 0, 100)
+color_correction = st.radio("Do you offer Color Correction?", ("Yes", "No"))
+extensions = st.radio("Do you offer Hair Extensions?", ("Yes", "No"))
 
-    st.header("Client Flow")
-    first_time_retention = st.slider("First-time client retention rate (%)", 0, 100)
-    rebooking_rate = st.slider("Rebooking rate at checkout (%)", 0, 100)
-    new_clients_per_month = st.number_input("New clients gained per month", min_value=0)
-    referral_program = st.radio("Do you have a referral program?", ["Yes", "No"])
+# ----------------- HAIRCUT PRICING -----------------
+st.header("Haircut Pricing")
+womens_cut_price = st.number_input("Women's Haircut Price ($)", min_value=0.0, format="%.2f")
+mens_cut_price = st.number_input("Men's Haircut Price ($)", min_value=0.0, format="%.2f")
 
-    st.header("Retail Sales & No-Show Management")
-    retail_sales_percent = st.slider("Retail product sales (% of revenue)", 0, 100)
-    no_show_rate = st.slider("No-show rate (%)", 0, 100)
+# ----------------- SOCIAL MEDIA -----------------
+st.header("Social Media Presence")
+instagram_posts = st.number_input("Instagram posts per week", min_value=0)
+instagram_engagement = st.slider("Instagram engagement rate (%)", 0, 100, 0)
 
-    st.header("Client Satisfaction")
-    review_rating = st.slider("Average client review rating (stars)", 1.0, 5.0, step=0.1)
+facebook_posts = st.number_input("Facebook posts per week", min_value=0)
+facebook_engagement = st.slider("Facebook engagement rate (%)", 0, 100, 0)
 
-    submitted = st.form_submit_button("Generate My Growth Plan")
+tiktok_posts = st.number_input("TikTok posts per week", min_value=0)
+tiktok_engagement = st.slider("TikTok engagement rate (%)", 0, 100, 0)
 
-# Suggestion logic
-if submitted:
-    suggestions = []
+# ----------------- CLIENT FLOW -----------------
+st.header("Client Flow Metrics")
+first_time_retention = st.slider("First-time client retention rate (%)", 0, 100, 0)
+rebooking_rate = st.slider("Rebooking at checkout rate (%)", 0, 100, 0)
+new_clients_monthly = st.number_input("New clients gained per month", min_value=0)
 
-    st.header("Your Custom Growth Plan")
+referral_program = st.radio("Do you have a referral program?", ("Yes", "No"))
 
-    # Services
-    if balayage_offered == "No":
-        suggestions.append("Offer Balayage at an intro price of $125 for first 10 clients, then adjust to market rate $160–$190.")
-    elif balayage_price < 160:
-        suggestions.append("Raise Balayage pricing to $160–$190 to align with STL metro market rates.")
+# ----------------- RETAIL & NO-SHOWS -----------------
+st.header("Retail Sales & No-Show Management")
+retail_sales_percent = st.slider("Retail product sales (% of total revenue)", 0, 100, 0)
+no_show_rate = st.slider("No-show rate (%)", 0, 100, 0)
 
-    if partial_foil_offered == "No":
-        suggestions.append("Add Partial Foil Highlights service. Intro price $90 for 5 clients, then raise to $110–$130 standard.")
-    elif partial_foil_price < 100:
-        suggestions.append("Raise Partial Foil pricing to $110–$130 range for competitive STL standards.")
+# ----------------- CLIENT SATISFACTION -----------------
+st.header("Client Satisfaction")
+review_rating = st.slider("Average client review rating (stars)", 1.0, 5.0, 5.0, step=0.1)
 
-    if full_foil_offered == "No":
-        suggestions.append("Add Full Foil Highlights at an intro price of $130, then standardize pricing at $140–$170.")
-    elif full_foil_price < 140:
-        suggestions.append("Raise Full Foil pricing to $140–$170 for STL metro market competitiveness.")
+# ----------------- DATA CAPTURE -----------------
+answers = {
+    "name": name,
+    "email": email,
+    "username": username,
+    "business_type": business_type,
+    "years_experience": years_experience,
+    "balayage_offered": balayage,
+    "balayage_price": balayage_price if balayage == "Yes" else None,
+    "partial_foil_offered": partial_foil,
+    "partial_foil_price": partial_foil_price if partial_foil == "Yes" else None,
+    "full_foil_offered": full_foil,
+    "full_foil_price": full_foil_price if full_foil == "Yes" else None,
+    "color_correction_offered": color_correction,
+    "extensions_offered": extensions,
+    "womens_cut_price": womens_cut_price,
+    "mens_cut_price": mens_cut_price,
+    "instagram_posts": instagram_posts,
+    "instagram_engagement": instagram_engagement,
+    "facebook_posts": facebook_posts,
+    "facebook_engagement": facebook_engagement,
+    "tiktok_posts": tiktok_posts,
+    "tiktok_engagement": tiktok_engagement,
+    "first_time_retention": first_time_retention,
+    "rebooking_rate": rebooking_rate,
+    "new_clients_monthly": new_clients_monthly,
+    "referral_program": referral_program,
+    "retail_sales_percent": retail_sales_percent,
+    "no_show_rate": no_show_rate,
+    "review_rating": review_rating
+}
 
-    if color_correction_offered == "No":
-        suggestions.append("Add Color Correction service. Start consults free, then $85–$100/hr based on complexity.")
+# ----------------- BUTTONS -----------------
+if st.button("Generate Growth Plan and Email Me"):
+    if name and email and username:
+        st.success(f"✅ Growth plan generated! (The emailing feature will be added soon for {email}.)")
+        st.write("Here’s what you submitted:")
+        st.json(answers)
+    else:
+        st.error("⚠️ Please complete your Name, Email, and Username before submitting.")
 
-    if extensions_offered == "No":
-        suggestions.append("Begin Hair Extensions certification. Offer model installs at discount; full pricing $350–$800 depending on method.")
 
-    # Haircut Pricing
-    if womens_cut_price < 50:
-        suggestions.append("Raise Women's Haircut price to $50–$75 depending on your skill and target market.")
-    if mens_cut_price < 30:
-        suggestions.append("Raise Men's Haircut price to $30–$50 range. Introduce a Maintenance Club Membership option.")
-
-    # Client Retention
-    if first_time_retention < 50:
-        suggestions.append("Offer a 'Welcome Back' perk (free deep conditioner or $10 off) for first-time rebookings within 6 weeks.")
-    if rebooking_rate < 70:
-        suggestions.append("Use a rebooking script at checkout and aim for 70%+ same-day rebooking.")
-
-    # New Client Acquisition
-    if new_clients_per_month < 10:
-        suggestions.append("Launch New Client Offer (15% off) and run a $5/day boosted ad on Instagram + Facebook for 14 days.")
-
-    if referral_program == "No":
-        suggestions.append("Create Referral Program: Refer a friend = $10 off for both referrer and new client.")
-
-    # Social Media Presence
-    if instagram_posts < 5:
-        suggestions.append("Post at least 5x per week on Instagram: 2 client transformations, 1 haircare tip, 1 behind-the-scenes, 1 promo.")
-    if instagram_engagement < 5:
-        suggestions.append("End every Instagram post with a question to boost engagement.")
-
-    if facebook_posts < 3:
-        suggestions.append("Post at least 3x per week on Facebook — cross-promote Instagram content if needed.")
-    if facebook_engagement < 3:
-        suggestions.append("Boost key Facebook posts with $5 to $10 ads targeted to local area.")
-
-    if tiktok_posts < 3:
-        suggestions.append("Post at least 3 TikToks per week showcasing transformations, funny trends, or hair tips.")
-    if tiktok_engagement < 3:
-        suggestions.append("Use trending sounds and hashtags on TikTok to increase local visibility.")
-
-    # Retail Sales
-    if retail_sales_percent < 15:
-        suggestions.append("Recommend 1–2 retail products to every client. Promote bundles (Buy 2, Get 10% Off).")
-
-    # No-Show Management
-    if no_show_rate > 5:
-        suggestions.append("Enforce 30–50% deposit for bookings over $100. Send 48hr + 24hr reminder texts.")
-
-    # Client Satisfaction
-    if review_rating < 4.5:
-        suggestions.append("Create a QR code linking to Google Reviews and offer $5 off for leaving a review.")
-
-    for idx, suggestion in enumerate(suggestions, 1):
-        st.markdown(f"**{idx}.** {suggestion}")
-
-    st.success("✅ Your growth plan is ready! Execute these steps to build sustainable success.")
