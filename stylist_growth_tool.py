@@ -129,4 +129,8 @@ if submitted:
     for idx, suggestion in enumerate(suggestions, 1):
         st.markdown(f"**{idx}.** {suggestion}")
 
+<<<<<<< HEAD
     st.success("✅ Your growth plan is ready! Execute these steps to build sustainable success.")
+=======
+    st.success("✅ Your hyper-specific growth plan is ready! Execute these steps to build sustainable success.")
+>>>>>>> e58ec08745d877899de4344e077fb200320c2694
