@@ -1,124 +1,114 @@
-import streamlit as st
+# stylist_growth_tool.py
+
+import datetime
+import json
 import requests
-from datetime import datetime
+from flask import Flask, render_template, request
 
-# Zapier Webhook URL (replace with your real URL)
-zapier_webhook_url = "https://hooks.zapier.com/hooks/catch/22679760/2p6zm30/"
+app = Flask(__name__)
 
-st.title("Stylist Growth Strategy Generator")
-st.write("Answer a few quick questions to get a hyper-specific growth plan tailored to you and your business. Enter your email to receive a copy!")
+ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/22679760/2p6zm30/"  # Your Zapier Webhook URL
 
-# User Information
-st.header("Your Info")
-name = st.text_input("Your Name")
-email = st.text_input("Email Address")
-# Username feature turned OFF for now
+def generate_suggestions(data):
+    """Generate smart paragraph-style growth suggestions based on the survey answers."""
+    suggestions = []
 
-business_type = st.selectbox(
-    "Which best describes your business model?",
-    ["Commission Stylist", "Booth Rental", "Salon Owner", "Mobile Stylist", "Other"]
-)
-years_experience = st.slider("How many years have you been doing hair?", 0, 50, 1)
+    # Analyze client flow metrics
+    if data["first_time_retention"] < 60:
+        suggestions.append(
+            "Focus on improving your first-time client retention. Introduce a 'Welcome Back' incentive such as a complimentary deep conditioner for rebooking within 6 weeks."
+        )
+    if data["rebooking_rate"] < 70:
+        suggestions.append(
+            "Strengthen rebooking rates by using a consistent script at checkout offering 10% off their next service if booked today."
+        )
+    if data["new_clients_monthly"] < 5:
+        suggestions.append(
+            "Launch a 'New Client Special' and invest $5/day into targeted Instagram and Facebook ads to boost your visibility."
+        )
 
-# Services
-st.header("Service Offerings & Pricing")
-balayage_offered = st.radio("Do you offer Balayage?", ("Yes", "No"))
-balayage_price = None
-if balayage_offered == "Yes":
-    balayage_price = st.number_input("If yes, current Balayage price ($)", min_value=0.0)
+    # Analyze service offerings and pricing
+    if data["balayage_offered"] == "Yes" and data["balayage_price"] < 160:
+        suggestions.append(
+            "Your Balayage price is below the STL market average. Increase it gradually to $175–$190, marketing it as a 'Signature Balayage + Gloss + Bond Builder.'"
+        )
+    if data["womens_cut_price"] < 50:
+        suggestions.append(
+            "Consider raising your Women's Haircut price to $55–$65, especially if your retention and rebooking rates improve."
+        )
 
-partial_foil_offered = st.radio("Do you offer Partial Foil Highlights?", ("Yes", "No"))
-partial_foil_price = None
-if partial_foil_offered == "Yes":
-    partial_foil_price = st.number_input("If yes, current Partial Foil price ($)", min_value=0.0)
+    # Analyze social media presence
+    if data["instagram_posts"] < 3 or data["instagram_engagement"] < 5:
+        suggestions.append(
+            "Post at least 5 times per week on Instagram and end each post with a question to double your engagement rate."
+        )
+    if data["tiktok_posts"] < 2:
+        suggestions.append(
+            "Expand onto TikTok with at least 2 videos per week using trending sounds to boost local visibility."
+        )
 
-full_foil_offered = st.radio("Do you offer Full Foil Highlights?", ("Yes", "No"))
-full_foil_price = None
-if full_foil_offered == "Yes":
-    full_foil_price = st.number_input("If yes, current Full Foil price ($)", min_value=0.0)
+    # Analyze retail and reviews
+    if data["retail_sales_percent"] < 10:
+        suggestions.append(
+            "Introduce a simple 'Buy 2, Get 10% Off' retail bundle to boost retail sales and increase revenue."
+        )
+    if data["review_rating"] < 4.5:
+        suggestions.append(
+            "Create a QR code at checkout that links to your Google Reviews page and offer $5 off their next service for leaving a review."
+        )
 
-color_correction_offered = st.radio("Do you offer Color Correction?", ("Yes", "No"))
-extensions_offered = st.radio("Do you offer Hair Extensions?", ("Yes", "No"))
+    # Limit to 3–5 most critical suggestions
+    return suggestions[:5]
 
-# Pricing
-st.header("Haircut Pricing")
-womens_cut_price = st.number_input("Women's Haircut Price ($)", min_value=0.0)
-mens_cut_price = st.number_input("Men's Haircut Price ($)", min_value=0.0)
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        # Capture form data
+        form_data = {
+            "name": request.form.get("name"),
+            "email": request.form.get("email"),
+            "business_type": request.form.get("business_type"),
+            "years_experience": int(request.form.get("years_experience")),
+            "balayage_offered": request.form.get("balayage_offered"),
+            "balayage_price": float(request.form.get("balayage_price")) if request.form.get("balayage_offered") == "Yes" else None,
+            "partial_foil_offered": request.form.get("partial_foil_offered"),
+            "partial_foil_price": float(request.form.get("partial_foil_price")) if request.form.get("partial_foil_offered") == "Yes" else None,
+            "full_foil_offered": request.form.get("full_foil_offered"),
+            "full_foil_price": float(request.form.get("full_foil_price")) if request.form.get("full_foil_offered") == "Yes" else None,
+            "color_correction_offered": request.form.get("color_correction_offered"),
+            "extensions_offered": request.form.get("extensions_offered"),
+            "womens_cut_price": float(request.form.get("womens_cut_price")),
+            "mens_cut_price": float(request.form.get("mens_cut_price")),
+            "instagram_posts": int(request.form.get("instagram_posts")),
+            "instagram_engagement": int(request.form.get("instagram_engagement")),
+            "facebook_posts": int(request.form.get("facebook_posts")),
+            "facebook_engagement": int(request.form.get("facebook_engagement")),
+            "tiktok_posts": int(request.form.get("tiktok_posts")),
+            "tiktok_engagement": int(request.form.get("tiktok_engagement")),
+            "first_time_retention": int(request.form.get("first_time_retention")),
+            "rebooking_rate": int(request.form.get("rebooking_rate")),
+            "new_clients_monthly": int(request.form.get("new_clients_monthly")),
+            "referral_program": request.form.get("referral_program"),
+            "retail_sales_percent": int(request.form.get("retail_sales_percent")),
+            "no_show_rate": int(request.form.get("no_show_rate")),
+            "review_rating": float(request.form.get("review_rating")),
+        }
 
-# Social Media
-st.header("Social Media Presence")
-instagram_posts = st.number_input("Instagram posts per week", min_value=0)
-instagram_engagement = st.slider("Instagram engagement rate (%)", 0, 100)
+        # Send to Zapier
+        payload = form_data.copy()
+        payload["timestamp"] = datetime.datetime.utcnow().isoformat()
+        requests.post(ZAPIER_WEBHOOK_URL, json=payload)
 
-facebook_posts = st.number_input("Facebook posts per week", min_value=0)
-facebook_engagement = st.slider("Facebook engagement rate (%)", 0, 100)
+        # Generate smart suggestions
+        suggestions = generate_suggestions(form_data)
 
-tiktok_posts = st.number_input("TikTok posts per week", min_value=0)
-tiktok_engagement = st.slider("TikTok engagement rate (%)", 0, 100)
+        return render_template("results.html", suggestions=suggestions, name=form_data["name"], email=form_data["email"])
 
-# Client Metrics
-st.header("Client Flow Metrics")
-first_time_retention = st.slider("First-time client retention rate (%)", 0, 100)
-rebooking_rate = st.slider("Rebooking at checkout rate (%)", 0, 100)
-new_clients_monthly = st.number_input("New clients gained per month", min_value=0)
-referral_program = st.radio("Do you have a referral program?", ("Yes", "No"))
+    return render_template("index.html")
 
-# Retail and No-shows
-st.header("Retail Sales & No-Show Management")
-retail_sales_percent = st.slider("Retail product sales (% of total revenue)", 0, 100)
-no_show_rate = st.slider("No-show rate (%)", 0, 100)
+if __name__ == "__main__":
+    app.run(debug=True)
 
-# Client Reviews
-st.header("Client Satisfaction")
-review_rating = st.slider("Average client review rating (stars)", 1.0, 5.0, step=0.1)
-
-# Submit Button
-if st.button("Generate Growth Plan"):
-    st.success(f"✅ Growth plan generated! (The emailing feature will be added soon for {email}.)")
-    st.write("Here’s what you submitted:")
-    
-    data = {
-        "timestamp": str(datetime.now()),
-        "name": name,
-        "email": email,
-        "business_type": business_type,
-        "years_experience": years_experience,
-        "balayage_offered": balayage_offered,
-        "balayage_price": balayage_price,
-        "partial_foil_offered": partial_foil_offered,
-        "partial_foil_price": partial_foil_price,
-        "full_foil_offered": full_foil_offered,
-        "full_foil_price": full_foil_price,
-        "color_correction_offered": color_correction_offered,
-        "extensions_offered": extensions_offered,
-        "womens_cut_price": womens_cut_price,
-        "mens_cut_price": mens_cut_price,
-        "instagram_posts": instagram_posts,
-        "instagram_engagement": instagram_engagement,
-        "facebook_posts": facebook_posts,
-        "facebook_engagement": facebook_engagement,
-        "tiktok_posts": tiktok_posts,
-        "tiktok_engagement": tiktok_engagement,
-        "first_time_retention": first_time_retention,
-        "rebooking_rate": rebooking_rate,
-        "new_clients_monthly": new_clients_monthly,
-        "referral_program": referral_program,
-        "retail_sales_percent": retail_sales_percent,
-        "no_show_rate": no_show_rate,
-        "review_rating": review_rating,
-    }
-    
-    st.json(data)
-
-    # --- Send to Zapier Webhook ---
-    try:
-        response = requests.post(zapier_webhook_url, json=data)
-        if response.status_code == 200:
-            st.success("🎯 Your data was successfully sent to the database!")
-        else:
-            st.error(f"⚠️ Error sending data. Status code: {response.status_code}")
-    except Exception as e:
-        st.error(f"⚠️ Exception occurred: {e}")
 
 
 
